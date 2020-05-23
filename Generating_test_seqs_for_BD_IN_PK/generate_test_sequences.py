@@ -337,6 +337,9 @@ pprint(final_input_map)
 
 import datetime
 
+with open('data/all_time_series_BD.txt', 'r') as f:
+    list_time_series_bd = f.read().splitlines()
+
 ############### generating training set #################################
 INF = 99999999999
 total_time_series = 5
@@ -379,7 +382,7 @@ for i in range(INF):
             current_country = n_edge_map[date][current_country][next_country_idx]
 
     print(one_time_series)
-    if not (one_time_series in time_series_all.keys()):
+    if not (one_time_series in time_series_all.keys()) and not (one_time_series in list_time_series_bd):
         time_series_all[one_time_series] = 1
         total_unique_seq = total_unique_seq + 1
         print(total_unique_seq)
