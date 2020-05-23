@@ -1,0 +1,4 @@
+Data/Raw Data/*.csv
+Data/Features/*.csv
+Data/Features/*.h5
+Models/*.pkl
