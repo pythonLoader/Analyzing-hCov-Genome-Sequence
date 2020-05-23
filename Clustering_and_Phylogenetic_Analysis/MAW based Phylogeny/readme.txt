@@ -9,3 +9,9 @@
    See defs.h file for distance method codes (e.g. 1 for Jaccard index)
 
 4. The output files (distance matrix and tree in newick format) will be printed in the working folder.
+
+
+Requirements:
+1. Unix OS (for MAW generation part)
+2. DendroPy (python library - used for producing trees)
+3. Boost library for C++
