@@ -1,8 +1,6 @@
 import pandas as pd
 import itertools
-import re
 import numpy as np
-import sys
 import os
 
 
@@ -83,26 +81,36 @@ def position_specific(df, order, nucleotides, max_length=30000):
     return ret_def
 
 
-if __name__ == "__main__":
+def extract_featutres(filename, outdir=''):
     nucleotides_ = ['A', 'C', 'T', 'G']
-    iupac_neucleotides = ['R','Y','K','M','S','W','B','D','H','V','N','-']
+    #iupac_neucleotides = ['R', 'Y', 'K', 'M', 'S', 'W', 'B', 'D', 'H', 'V', 'N', '-']
+    iupac_neucleotides = []
 
-    filename = 'All_Data'
-    filepath = 'Data/Raw Data/' + filename + '.csv'
+    dir = 'Features/' + outdir + '/'
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+    filepath = '../Input/' + filename + '.csv'
 
     df = pd.read_csv(filepath, delimiter=',')
     df['Sequence'] = df['Sequence'].str.upper()
 
-    print(df.shape)
+    print('Data Shape: ', df.shape)
 
     if 'Indicator' in df.columns:
         labels = pd.DataFrame(df['Indicator'].astype(np.int8), columns=['Indicator'])
-        labels.to_hdf('Data/Features/' + filename + '_labels.h5', key='labels')
+        labels.to_hdf( dir + filename + '_labels.h5', key='labels')
 
     df_pos_ind = position_independent(df, 4, nucleotides_, iupac_neucleotides).astype(np.int32)
-    df_pos_ps = position_specific(df, 5, nucleotides_).astype(np.int32)
-    df_gap = gap_features(df, nucleotides_).astype(np.int32)
+    df_pos_ind.to_hdf(dir + filename + '_pi.h5', key='pi')
 
-    df_pos_ind.to_hdf('Data/Features/' + filename + '_pi.h5', key='pi')
-    df_pos_ps.to_hdf('Data/Features/' + filename + '_ps.h5', key='ps')
-    df_gap.to_hdf('Data/Features/' + filename + '_gap.h5', key='gap')
+    df_pos_ps = position_specific(df, 5, nucleotides_).astype(np.int32)
+    df_pos_ps.to_hdf(dir + filename + '_ps.h5', key='ps')
+
+    df_gap = gap_features(df, nucleotides_).astype(np.int32)
+    df_gap.to_hdf(dir + filename + '_gap.h5', key='gap')
+
+
+if __name__ == "__main__":
+    filename = input('Filename:')
+    extract_featutres(filename)

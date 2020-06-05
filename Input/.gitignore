@@ -1,0 +1,4 @@
+*.fasta
+*.csv
+!Dataset_Labelling_Helper.csv
+!gisaid_cov2020_acknowledgement_table.csv
