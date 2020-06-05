@@ -25,7 +25,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score, confusion_m
 
 LOSS_FN = 'binary_crossentropy'  
 LEARNING_RATE = 0.000001  
-n_epochs = 1
+n_epochs = 1000
 BATCH_SIZE =32
 
 OUTPUT_FOLDER = "new_models"
