@@ -14,21 +14,13 @@ double diffMatrix[MAX_NUM_GENE][MAX_NUM_GENE];
 
 int main(int argc, char *argv[])
 {
-    cout << "Distance calculation file starts running.....\n";
+    cout << "\n\nDistance calculation file starts running.....\n";
 
-    string folder(argv[1]);
-    string basePath = folder;
-    string pathName = basePath + "/maws";
+    string basePath = "";
+
     vector<string> fileNames, filesWithPath, taxaNames;
 
-    GetAllFileName(pathName, fileNames);
-
-    for (int i = 0; i < fileNames.size(); i++)
-    {
-        string str = pathName + "/" + fileNames[i];
-        filesWithPath.push_back(str);
-        //cout<<filesWithPath[i]<<endl;
-    }
+    string input = "input.maw.fasta";
 
     vector<Set> maws;
     vector<string> taxas;
@@ -37,30 +29,20 @@ int main(int argc, char *argv[])
 
     auto start = cloc::now();
 
-    if (fileNames.size() > 1)
-        maws = GetAllSetsFromMultipleFiles(filesWithPath, fileNames, taxas); //multiple file format
-    else
-        maws = GetAllSetsFromOneFile(filesWithPath[0], taxas); //single file format
+    maws = GetAllSetsFromOneFile(input,taxas);
 
     sec duration = cloc::now() - start;
 
-    cout << "MAWs extracted. Time taken (sec)--> " << duration.count() << endl
-         << endl;
+    cout << "MAWs extracted. Time taken (sec)--> " << duration.count() << endl << endl;
 
     int num_of_genes = maws.size();
 
-    //for (int i = 0; i < taxas.size(); i++)
-    //{
-    //    cout<<taxas[i]<<endl;
-    //}
 
     cout << num_of_genes << " species found\n\n";
 
-    //double diffMatrix[MAX_NUM_GENE][MAX_NUM_GENE];
-
     cout << "Calculating distance matrix.....\n\n";
 
-    int distMethod = stoi(string(argv[2]));
+    int distMethod = stoi(string(argv[1]));
 
     start = cloc::now();
     CalculateDistanceMatrix(maws, diffMatrix, num_of_genes, distMethod);
@@ -70,7 +52,7 @@ int main(int argc, char *argv[])
 
     printMatrix(basePath, taxas, diffMatrix, num_of_genes, distMethod, CSV);
 
-    cout << "Distance matrix printed...\n\n " << endl;
+    cout << "Distance matrix printed...\n\n ";
 
     return 0;
 }

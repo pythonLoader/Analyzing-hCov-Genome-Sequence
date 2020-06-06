@@ -1,17 +1,28 @@
-1. Create a working folder in this directory and put a "maws" folder in it.
-2. Get the MAWs from sequences and put it in the maws folder. (see this https://github.com/solonas13/maw)
-3. Now run the script 
-        ./run.sh <working_folder_name> <distance_method>
+# Instructions:
 
-   For example, in current scenario, it would be:
-        ./run.sh data 1
- 
-   See defs.h file for distance method codes (e.g. 1 for Jaccard index)
+1. You need to have the MAW suite installed on your directory. This suite is taken from https://github.com/solonas13/maw
+   You will be prompted to install MAW from the controller scripts. Required files for MAW will be fetched.
 
-4. The output files (distance matrix and tree in newick format) will be printed in the working folder.
+
+2. To produce MAW based phylogeny results, you need to set some parameters.
+
+     a. Minimum MAW length
+     b. Maximum MAW length
+     c. Distance Method (e.g 1 for Jaccard, 2 for Length Weighted Index. See more on defs.h)
+     d. Input file name (it expects the input file to be in the Input folder of previous directory)
+
+
+3. A sample command to run the analysis.
+
+     python controller.py --label Death --method MAW -min_ml 12 -max_ml 15 -dm 1 -ff input.fasta
+
 
 
 Requirements:
+
 1. Unix OS (for MAW generation part)
 2. DendroPy (python library - used for producing trees)
-3. Boost library for C++
+
+
+
+

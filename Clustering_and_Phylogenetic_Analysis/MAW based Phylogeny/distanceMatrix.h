@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <boost/filesystem.hpp>
 
 #include "set.h"
 #include "fileHandler.h"
@@ -88,7 +87,7 @@ void printMatrix(string outputPath, vector<string> taxas, double diffMatrix[][MA
     {
     case CSV: // CSV dist matrix used as input to Dendropy's newick tree file generation
     {
-        string outFile = outputPath + "/distanceMatrix" + to_string(distIndex) + ".csv";
+        string outFile = outputPath + "out_dist" + to_string(distIndex) + ".csv";
         ofstream out;
         out.open(outFile);
 
@@ -115,7 +114,7 @@ void printMatrix(string outputPath, vector<string> taxas, double diffMatrix[][MA
     case PHYLIP:
     {
 
-        string outFile = outputPath + "/distanceMatrix.phy";
+        string outFile = outputPath + "out_dist" + to_string(distIndex) + ".phy";
         ofstream out;
         out.open(outFile);
 
@@ -140,7 +139,7 @@ void printMatrix(string outputPath, vector<string> taxas, double diffMatrix[][MA
     case TSV:
     {
 
-        string outFile = outputPath + "/distanceMatrix" + to_string(distIndex) + ".csv";
+        string outFile = outputPath + "out_dist" + to_string(distIndex) + ".tsv";
         ofstream out;
         out.open(outFile);
 

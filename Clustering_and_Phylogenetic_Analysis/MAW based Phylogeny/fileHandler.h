@@ -1,27 +1,12 @@
 #pragma once
 
 #include <bits/stdc++.h>
-#include <boost/filesystem.hpp>
 
 #include "set.h"
 #include "defs.h"
 
 using namespace std;
-using namespace boost::filesystem;
 
-void GetAllFileName(string pathName, vector<string> &fileNames)
-{
-    path p(pathName);
-
-    for (auto i = directory_iterator(p); i != directory_iterator(); i++)
-    {
-        if (!is_directory(i->path())) //ignoring directories
-        {
-            fileNames.push_back(i->path().filename().string());
-            //cout<<i->path().filename().string()<<endl;
-        }
-    }
-}
 
 string TaxaNameFromFileName(string fileName)
 {

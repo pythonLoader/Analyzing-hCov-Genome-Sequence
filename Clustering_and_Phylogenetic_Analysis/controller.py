@@ -1,6 +1,7 @@
 import subprocess
 import argparse
 import re
+import os
 
 def main():
     #------------------------------------ Parsing Routines --------------------------------------------------#
@@ -12,9 +13,9 @@ def main():
     required.add_argument('--method','-m',type=str, required=True, choices = methods,help='Available methods: ' +"'"+"', '".join(methods) +"'")
     
     required_by_methods = parser.add_argument_group('Arguments required by some methods')
-    required_by_methods.add_argument('--Minimum_MAW_Length', '-min_ml', help="minimum length of MAW Sets", type=int)
-    required_by_methods.add_argument('--Maximum_MAW_Length', '-max_ml', help="Maximum length of MAW Sets",type=int)
-    required_by_methods.add_argument('--Distance_Method', '-dm', help="Distance Method (Samudra, You can add option's name here)",type=str)
+    required_by_methods.add_argument('--Minimum_MAW_Length', '-min_ml', help="Minimum length of MAWs", type=str)
+    required_by_methods.add_argument('--Maximum_MAW_Length', '-max_ml', help="Maximum length of MAWs",type=str)
+    required_by_methods.add_argument('--Distance_Method', '-dm', help="Distance Method (e.g 1 for Jaccard Distance, see more on defs.h)",type=str)
     required_by_methods.add_argument('--fasta_file', '-ff', help="Fasta_File_Name",type=str)
     
 
@@ -60,10 +61,10 @@ def main():
         max_maw_length = pars.Maximum_MAW_Length
         distance_method = pars.Distance_Method
         fasta_file = pars.fasta_file
-        # fasta file contents input folder theke read kore niye ashish.
-        ##SAMUDRA CODES
-        # subprocess.call(['g++','Maw.cpp','Args'])
-        print("HAVE TO Call yours CODES from HERE")
+
+        required_file = "../Input/" + fasta_file
+        fasta_file_path = os.path.abspath(required_file)
+        subprocess.call(['./runMAW.sh','dist',min_maw_length, max_maw_length, distance_method,fasta_file_path])
         
 
     if(post_processing_flag == True):
@@ -82,8 +83,8 @@ def main():
         tree_file.close()
         #-----------------Tree Generation------------------------#
     else:
-        print("Generate only tree in this section")
-        # Tor post_processing bolte sudhu tree file ta call korish.
+        distance_method = pars.Distance_Method
+        subprocess.call(['./runMAW.sh','tree',distance_method])
 
 if __name__ == "__main__":
     main()
