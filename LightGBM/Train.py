@@ -72,6 +72,7 @@ def k_fold_cv(data_x , data_y, outdir, folds=10):
     recalls = []
     f1_scores = []
     rocs = []
+    folds = []
 
     for train_index, test_index in skf.split(data_x, data_y):
         i += 1
@@ -85,6 +86,8 @@ def k_fold_cv(data_x , data_y, outdir, folds=10):
         prob_y = pd.DataFrame(pipeline.predict_proba(test_x)).values
 
         acc, pre, re, f1, roc = score(test_y, pred_y, prob_y)
+
+        folds.append(i)
         accuracies.append(acc)
         precisions.append(pre)
         recalls.append(re)
@@ -94,12 +97,13 @@ def k_fold_cv(data_x , data_y, outdir, folds=10):
         print('Fold: ',i)
         print(acc, pre, re, f1, roc)
 
+    folds = pd.DataFrame(folds, columns=['Fold'])
     accuracies = pd.DataFrame(accuracies, columns=['Accuracy'])
     precisions = pd.DataFrame(precisions, columns=['Precision'])
     recalls = pd.DataFrame(recalls, columns=['Recall'])
     f1_scores = pd.DataFrame(f1_scores, columns=['F1 Scores'])
     rocs = pd.DataFrame(rocs, columns=['AUROC'])
-    scores = pd.concat([accuracies,precisions,recalls, f1_scores, rocs], axis=1, sort=False)
+    scores = pd.concat([folds, accuracies,precisions,recalls, f1_scores, rocs], axis=1, sort=False)
 
     scores.to_csv(dir + 'Cross Validation Result.csv', index=False)
 
@@ -120,8 +124,8 @@ def join_train_test(train_filename, test_filename, outdir):
 
     train_x, train_y = load_data(train_filename)
     test_x, test_y = load_data(test_filename)
-    data_x = pd.concat(train_x, test_x, ignore_index = True)
-    data_y = pd.concat(train_y, test_y, ignore_index=True)
+    data_x = pd.concat([train_x, test_x], ignore_index = True)
+    data_y = pd.concat([train_y, test_y], ignore_index=True)
     return data_x, data_y
 
 def save_results(dir,acc,pre,re,f1,roc):

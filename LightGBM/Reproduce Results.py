@@ -1,7 +1,7 @@
-from .GenerateFeatures import extract_featutres
-from .Train import k_fold_cv
-from .Train import join_train_test
-from .Train import split_train
+from GenerateFeatures import extract_featutres
+from Train import k_fold_cv
+from Train import join_train_test
+from Train import split_train
 
 if __name__ == "__main__":
     labelling_criteria = 'Death'
@@ -10,8 +10,8 @@ if __name__ == "__main__":
     train_filename = 'Train_labelled_by_' + labelling_criteria
     test_filename = 'Test_labelled_by_' + labelling_criteria
 
-    extract_featutres(train_filename, outdir)
-    extract_featutres(test_filename, outdir)
+    # extract_featutres(train_filename, outdir)
+    # extract_featutres(test_filename, outdir)
 
     split_train(train_filename, test_filename, outdir)
 
