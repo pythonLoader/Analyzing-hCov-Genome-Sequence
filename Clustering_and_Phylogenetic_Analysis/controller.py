@@ -5,7 +5,7 @@ import os
 
 def main():
     #------------------------------------ Parsing Routines --------------------------------------------------#
-    methods = 	('Euclidean','cosine','Novel_Fast_Vector','Accumulated_Fast_Vector',"MAW")
+    methods = 	('Euclidean','Novel_Fast_Vector','Accumulated_Fast_Vector',"MAW")
     labels = ('Death','CFR_confirmed_cases','CFR_Recovery','CFR_Infrastructure')
     parser = argparse.ArgumentParser(description="genome sequence set splitter by country")
     required = parser.add_argument_group('Required Arguments')
