@@ -1,6 +1,7 @@
 ﻿## This repository is the official implementation of the Analyzing-hCov-genome-sequence pipeline. 
 
 
+<<<<<<< HEAD
 If you use any part of this repository, we shall be very grateful if you cite our paper [Analyzing hCov genome sequences: Applying Machine Intelligence and beyond](https://www.biorxiv.org/content/10.1101/2020.06.03.132506v1)
 
 # Usage
@@ -49,3 +50,6 @@ If you use any part of this repository, we shall be very grateful if you cite ou
     - Fasta File Name (Must be kept in the Input Directory)
 5. Sample Command:
 > python controller.py --label <label_option> --method <method_option>
+=======
+If you use any part of this repository, we shall be very grateful if you cite our paper [Analyzing hCov genome sequences: Applying Machine Intelligence and beyond](https://www.biorxiv.org/content/10.1101/2020.06.03.131987v1)
+>>>>>>> b291b953e433f12c91c77835af86c188e4977eba
