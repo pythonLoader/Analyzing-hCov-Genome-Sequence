@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-
-
+import argparse
 import pandas as pd
 import numpy as np
 
@@ -22,33 +20,6 @@ from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
-
-
-
-df_test=pd.read_csv('Test_gisaid_LS.csv')
-df_train=pd.read_csv('Train_gisaid_LS.csv')
-
-
-
-
-
-df_test.head()
-
-
-
-
-
-train_sequences=list(df_train["Sequence"])
-y_indicator=list(df_train["Indicator"])
-print(len(train_sequences))
-
-
-
-
-
-K_MER_LENGTH = 3 
-NUMBER_OF_K_MERS=np.power(4,K_MER_LENGTH)
-print(NUMBER_OF_K_MERS)
 
 
 
@@ -95,46 +66,17 @@ def get_all_combs(seq,power):
 
 
 
-length_max=0
-for i in range(0,len(train_sequences)):
-  k_mer_list=get_motifs(K_MER_LENGTH,train_sequences[i])
-  if len(k_mer_list)>length_max:
-    length_max=len(k_mer_list)
-print(length_max)
 
 
 
 
-MAX_LEN=length_max
 
-
-
-all_combination_list=get_all_combs('ATCG',K_MER_LENGTH)
-all_comb_dict={}
-for i in range(0,len(all_combination_list)):
-  all_comb_dict[all_combination_list[i]]=i
-print(all_comb_dict)
-
-
-
-
-print(len(all_combination_list))
-
-
-
-
-import pandas as pd
 def one_hot_encode(d): #Pass the motif dictionary
     S = pd.Series({'A':list(d.keys())})
     # print(S)
     one_hot = pd.get_dummies(S['A'])
     print(type(one_hot))
     return one_hot
-
-
-
-
-one_hot_df=one_hot_encode(all_comb_dict)
 
 
 
@@ -151,7 +93,7 @@ def get_max_len(all_seq_list):
 
 
 
-def sequence_generator(all_seq_list,max_len, all_comb_dict,bs, y_vals):
+def sequence_generator(all_seq_list,max_len, all_comb_dict,bs, y_vals, K_MER_LENGTH,NUMBER_OF_K_MERS):
   num=0
   while True:
     sequences_2D_Mats=[]
@@ -178,48 +120,13 @@ def sequence_generator(all_seq_list,max_len, all_comb_dict,bs, y_vals):
 
 
 
-train_sequences=np.array(train_sequences)
-y_indicator=np.array(y_indicator)
 
 
 
 
 
-X_train, X_val, y_train, y_val = train_test_split(
-train_sequences, y_indicator, test_size=0.15, random_state=42)
-print(X_train.shape)
-print(X_val.shape)
 
-
-
-
-NUM_EPOCHS = 150
-BS = 10
-Total_Epochs_Running=150
-
-
-LOSS_FN = 'binary_crossentropy'  
-LEARNING_RATE = 0.000001   # 0.0001, 0.00005, 0.00003
-
-
-
-num_train_seq=len(X_train)
-num_valid_seq=len(X_val)
-
-
-
-
-
-max_len=MAX_LEN
-print(type(all_comb_dict))
-trainGen = sequence_generator(X_train,max_len, all_comb_dict,BS,y_train)
-validationGen = sequence_generator(X_val,max_len, all_comb_dict,BS,y_val)
-
-
-
-
-
-def AlexNet(d1,d2):
+def AlexNet(d1,d2,LOSS_FN,LEARNING_RATE):
   model = Sequential()
 
   # 1st Convolutional Layer
@@ -287,7 +194,7 @@ def inception_module(layer_in, f1, f2_in, f2_out, f3_in, f3_out, f4_out):
 
     return layer_out
  
-def InceptionNet(dim1,dim2):
+def InceptionNet(dim1,dim2,LOSS_FN,LEARNING_RATE):
     # define model input
     visible = Input(shape=(dim1,dim2))
     # add inception block 1
@@ -307,41 +214,90 @@ def InceptionNet(dim1,dim2):
     return model
 
 
+def train(label,model_name, epoch_number, k_mer_length):
+    BS=10
+    NUM_EPOCHS = epoch_number
+    K_MER_LENGTH = k_mer_length
+    LEARNING_RATE = 0.000001 
+    OUTPUT_FOLDER="Output_Models"
+
+
+    df_train = pd.read_csv("../Input/Train_labelled_by_"+label+".csv")
+    print("preparing input-------------")
+
+    train_sequences=list(df_train["Sequence"])
+    y_indicator=list(df_train["Indicator"])
+
+
+    NUMBER_OF_K_MERS=np.power(4,K_MER_LENGTH)
+
+
+    length_max=0
+    for i in range(0,len(train_sequences)):
+      k_mer_list=get_motifs(K_MER_LENGTH,train_sequences[i])
+      if len(k_mer_list)>length_max:
+        length_max=len(k_mer_list)
+    #print(length_max)
+    MAX_LEN=length_max
 
 
 
-
-model=AlexNet(NUMBER_OF_K_MERS,MAX_LEN)
-model_name="AlexNet"
-
-model_name="InceptionNet"
-model=InceptionNet(NUMBER_OF_K_MERS,MAX_LEN)
+    all_combination_list=get_all_combs('ATCG',K_MER_LENGTH)
+    all_comb_dict={}
+    for i in range(0,len(all_combination_list)):
+      all_comb_dict[all_combination_list[i]]=i
 
 
+    train_sequences=np.array(train_sequences)
+    y_indicator=np.array(y_indicator)
 
 
-
-callbacks_list = [
-    ModelCheckpoint(
-        # filepath='best_model.{epoch:02d}-{val_loss:.2f}.h5',
-        filepath='best_model_'+str(K_MER_LENGTH)+'_'+model_name+'_BS_'+str(BS)+'_E_'+str(Total_Epochs_Running)+'.h5',
-        monitor='val_loss', save_best_only=True),
-    # EarlyStopping(monitor='val_loss',mode='min', patience=200)
-]
+    X_train, X_val, y_train, y_val = train_test_split(train_sequences, y_indicator, test_size=0.15, random_state=42)
 
 
+    LOSS_FN = 'binary_crossentropy'  
 
 
-
-H = model.fit_generator(
-    trainGen,
-    steps_per_epoch=num_train_seq // BS,
-    validation_data=validationGen,
-    validation_steps=num_valid_seq // BS,
-    epochs=NUM_EPOCHS,
- callbacks=callbacks_list)
+    num_train_seq=len(X_train)
+    num_valid_seq=len(X_val)
 
 
+    max_len=MAX_LEN
+    
+    trainGen = sequence_generator(X_train,max_len, all_comb_dict,BS,y_train,K_MER_LENGTH,NUMBER_OF_K_MERS)
+    validationGen = sequence_generator(X_val,max_len, all_comb_dict,BS,y_val,K_MER_LENGTH,NUMBER_OF_K_MERS)
 
-model.save(model_name+"_K_"+str(K_MER_LENGTH)+'_BS_'+str(BS)+'_E_'+str(Total_Epochs_Running)+'.h5')
+    if model_name == "AlexNet":
+      model=AlexNet(NUMBER_OF_K_MERS,MAX_LEN,LOSS_FN,LEARNING_RATE)
 
+    elif model_name == "InceptionNet":
+      model=InceptionNet(NUMBER_OF_K_MERS,MAX_LEN,LOSS_FN,LEARNING_RATE)
+
+    
+    callbacks_list = [ModelCheckpoint(filepath=OUTPUT_FOLDER+"/"+'best_model_'+str(K_MER_LENGTH)+'_'+model_name+'_BS_'+str(BS)+'_E_'+str(NUM_EPOCHS)+'.h5',monitor='val_loss', save_best_only=True)]
+    H = model.fit_generator(trainGen,steps_per_epoch=num_train_seq // BS,validation_data=validationGen,validation_steps=num_valid_seq // BS,epochs=NUM_EPOCHS,callbacks=callbacks_list)
+    model.save_weights(OUTPUT_FOLDER+"/"+model_name+"_K_"+str(K_MER_LENGTH)+'_E_'+str(NUM_EPOCHS)+'.h5')
+
+
+def main():
+    parser = argparse.ArgumentParser(description="classification with input represented as one_hot vectors.Requires label on which train set is prepared, model name, number of epochs, k-mer length.")
+    required = parser.add_argument_group('Required Arguments')
+    required.add_argument('--label','-l',help='Label on which parameter (Death/CFR_confirmed_cases/CFR_Recovery/CFR_Infrastructure)',required=True,type=str)
+    required.add_argument('--model_name','-m',help='Name the model to be trained (AlexNet/InceptionNet) ', required=True, type=str)
+    required.add_argument('--epoch_number','-en',help='Define the kmer length (3/4/5)',required=True, type=int)
+    required.add_argument('--k_length','-kl',help='Define the kmer length (3/4/5)',required=True, type=int)
+
+    
+    pars = parser.parse_args()
+    label = pars.label
+    model_name = pars.model_name
+    epoch_number= pars.epoch_number
+    k_mer_length = pars.k_length
+    
+    #Train(label,model,k_length)
+    train(label, model_name, epoch_number, k_mer_length)
+    
+
+
+if __name__ == "__main__":
+    main()
